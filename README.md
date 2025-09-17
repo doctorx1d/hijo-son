@@ -1,2 +1,278 @@
-# hijo-son
-my son
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos de Mi Hijo - Organizador Familiar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .file-card { transition: all 0.3s ease; }
+        .file-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-purple-800 mb-2">💝 Archivos de Mi Hijo</h1>
+            <p class="text-purple-600 text-lg">Guarda y organiza todos los momentos especiales</p>
+        </div>
+
+        <!-- Add New File Form -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="mr-2">📁</span> Agregar Nuevo Archivo
+            </h2>
+            <form id="fileForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre del archivo</label>
+                    <input type="text" id="fileName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Ej: Certificado de nacimiento">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                    <select id="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="documentos">📄 Documentos</option>
+                        <option value="medicos">🏥 Médicos</option>
+                        <option value="escolares">🎓 Escolares</option>
+                        <option value="fotos">📸 Fotos</option>
+                        <option value="otros">📋 Otros</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+                    <input type="date" id="fileDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Importancia</label>
+                    <select id="importance" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="alta">🔴 Alta</option>
+                        <option value="media">🟡 Media</option>
+                        <option value="baja">🟢 Baja</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Descripción/Notas</label>
+                    <textarea id="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Detalles adicionales, ubicación física, etc."></textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center">
+                        <span class="mr-2">➕</span> Guardar Archivo
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text" id="searchInput" placeholder="🔍 Buscar archivos..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <select id="filterCategory" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Todas las categorías</option>
+                        <option value="documentos">📄 Documentos</option>
+                        <option value="medicos">🏥 Médicos</option>
+                        <option value="escolares">🎓 Escolares</option>
+                        <option value="fotos">📸 Fotos</option>
+                        <option value="otros">📋 Otros</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Files Grid -->
+        <div id="filesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Sample files will be added here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <div class="text-6xl mb-4">📁</div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay archivos guardados</h3>
+            <p class="text-gray-500">Agrega el primer archivo usando el formulario de arriba</p>
+        </div>
+    </div>
+
+    <script>
+        let files = [
+            {
+                id: 1,
+                name: "Certificado de Nacimiento",
+                category: "documentos",
+                date: "2020-03-15",
+                importance: "alta",
+                description: "Original guardado en caja fuerte del banco. Copia en archivero casa.",
+                dateAdded: new Date()
+            },
+            {
+                id: 2,
+                name: "Cartilla de Vacunación",
+                category: "medicos",
+                date: "2020-03-20",
+                importance: "alta",
+                description: "Actualizada hasta los 3 años. Próxima cita: Dr. García en abril.",
+                dateAdded: new Date()
+            },
+            {
+                id: 3,
+                name: "Primera Foto Escolar",
+                category: "fotos",
+                date: "2023-09-01",
+                importance: "media",
+                description: "Kinder - Maestra Ana. Copia digital en Google Photos.",
+                dateAdded: new Date()
+            }
+        ];
+
+        const categoryIcons = {
+            documentos: "📄",
+            medicos: "🏥",
+            escolares: "🎓",
+            fotos: "📸",
+            otros: "📋"
+        };
+
+        const importanceColors = {
+            alta: "bg-red-100 text-red-800 border-red-200",
+            media: "bg-yellow-100 text-yellow-800 border-yellow-200",
+            baja: "bg-green-100 text-green-800 border-green-200"
+        };
+
+        function renderFiles(filesToRender = files) {
+            const container = document.getElementById('filesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (filesToRender.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            container.innerHTML = filesToRender.map(file => `
+                <div class="file-card bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">${categoryIcons[file.category]}</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 text-lg">${file.name}</h3>
+                                <p class="text-sm text-gray-500">${formatDate(file.date)}</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteFile(${file.id})" class="text-red-500 hover:text-red-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium border ${importanceColors[file.importance]}">
+                            ${file.importance.charAt(0).toUpperCase() + file.importance.slice(1)} Importancia
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm leading-relaxed">${file.description}</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <p class="text-xs text-gray-400">Agregado: ${formatDate(file.dateAdded.toISOString().split('T')[0])}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function addFile(event) {
+            event.preventDefault();
+            
+            const fileName = document.getElementById('fileName').value.trim();
+            const category = document.getElementById('category').value;
+            const fileDate = document.getElementById('fileDate').value;
+            const importance = document.getElementById('importance').value;
+            const description = document.getElementById('description').value.trim();
+            
+            if (!fileName || !fileDate) {
+                alert('Por favor completa el nombre del archivo y la fecha');
+                return;
+            }
+            
+            const newFile = {
+                id: Date.now(),
+                name: fileName,
+                category: category,
+                date: fileDate,
+                importance: importance,
+                description: description || 'Sin descripción adicional',
+                dateAdded: new Date()
+            };
+            
+            files.unshift(newFile);
+            renderFiles();
+            document.getElementById('fileForm').reset();
+            
+            // Show success message
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="mr-2">✅</span> ¡Guardado!';
+            button.classList.add('bg-green-600');
+            button.classList.remove('bg-purple-600');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-600');
+                button.classList.add('bg-purple-600');
+            }, 2000);
+        }
+
+        function deleteFile(id) {
+            if (confirm('¿Estás segura de que quieres eliminar este archivo?')) {
+                files = files.filter(file => file.id !== id);
+                renderFiles();
+            }
+        }
+
+        function filterFiles() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('filterCategory').value;
+            
+            let filteredFiles = files;
+            
+            if (searchTerm) {
+                filteredFiles = filteredFiles.filter(file => 
+                    file.name.toLowerCase().includes(searchTerm) ||
+                    file.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (categoryFilter) {
+                filteredFiles = filteredFiles.filter(file => file.category === categoryFilter);
+            }
+            
+            renderFiles(filteredFiles);
+        }
+
+        // Event listeners
+        document.getElementById('fileForm').addEventListener('submit', addFile);
+        document.getElementById('searchInput').addEventListener('input', filterFiles);
+        document.getElementById('filterCategory').addEventListener('change', filterFiles);
+
+        // Set today's date as default
+        document.getElementById('fileDate').valueAsDate = new Date();
+
+        // Initial render
+        renderFiles();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98040f6cd6ae3148',t:'MTc1ODA2NDQ2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
